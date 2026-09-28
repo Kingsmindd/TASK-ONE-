@@ -9,10 +9,7 @@ import type { Category, FormErrors, Task, TaskInput } from "../tasks";
 const EditTaskPage: React.FC<{
   tasks: Task[];
   onSave: (id: string, input: TaskInput) => void;
-}> = ({
-  tasks,
-  onSave,
-}) => {
+}> = ({ tasks, onSave }) => {
   const { id } = useParams();
   let task: Task | undefined = tasks[0];
   if (id) {
@@ -39,10 +36,7 @@ const EditTaskPage: React.FC<{
 const EditTaskFields: React.FC<{
   task: Task;
   onSave: (id: string, input: TaskInput) => void;
-}> = ({
-  task,
-  onSave,
-}) => {
+}> = ({ task, onSave }) => {
   const navigate = useNavigate();
   const heading = task.heading;
   const [title, setTitle] = useState("urgent");
@@ -202,7 +196,7 @@ const EditTaskFields: React.FC<{
               className="absolute -top-4 left-4 bg-white px-2 text-lg leading-8 text-stone-500 md:left-6 md:text-xl"
               htmlFor="category"
             >
-              Tags / Category
+              Tags
             </label>
             <select
               className="w-full min-h-18 rounded-lg border border-stone-400 bg-white px-5 py-6 text-lg text-neutral-800 placeholder:text-base placeholder:text-stone-400 focus:border-purple-600 aria-invalid:border-rose-600 md:min-h-20 md:px-6 md:text-xl"
