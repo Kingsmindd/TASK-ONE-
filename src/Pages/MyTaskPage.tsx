@@ -38,7 +38,7 @@ const MyTaskPage: React.FC<{
         <div
           className="flex flex-wrap gap-2"
           role="group"
-          aria-label="Filter by category"
+          aria-label="Filter by tag"
         >
           {["All", ...categories].map((item) => (
             <button
@@ -181,7 +181,7 @@ const MyTaskPage: React.FC<{
           </h2>
           <p className="mt-3 mb-6 text-stone-500">
             {tasks.length
-              ? "Try another category or completion status."
+              ? "Try another tag or completion status."
               : "Add your first task and start making progress."}
           </p>
           {tasks.length ? (

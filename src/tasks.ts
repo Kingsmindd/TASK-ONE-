@@ -52,7 +52,7 @@ export function validateTask(task: TaskInput) {
     errors.description = "Add a short description.";
   }
   if (!categories.includes(task.category)) {
-    errors.category = "Choose a category.";
+    errors.category = "Choose a tag.";
   }
   if (!task.dueDate) {
     errors.dueDate = "Choose a due date.";

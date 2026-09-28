@@ -179,7 +179,7 @@ const NewTask: React.FC<{
               aria-invalid={!!errors.category}
               aria-describedby={errors.category ? "category-error" : undefined}
             >
-              <option value="">Choose a category</option>
+              <option value="">Choose a Tag</option>
               {categories.map((category) => (
                 <option key={category}>{category}</option>
               ))}
