@@ -1,8 +1,8 @@
 import type * as React from "react";
 import { NavLink, Link } from "react-router-dom";
 import logo from "../assets/Group 1.png";
-import profilePicture from "../assets/Ellipse 1.png";
-const Navbar: React.FC = () => {
+
+const Navbar: React.FC<{ authenticated: boolean; onLogout: () => void }> = ({authenticated, onLogout}) => {
   return (
     <header className="border-b border-purple-100 bg-white">
       <nav
@@ -22,23 +22,19 @@ const Navbar: React.FC = () => {
         </Link>
         <div className="flex items-center gap-4 text-xs font-semibold md:gap-8 md:text-sm">
           <NavLink
-            className="rounded-lg border font-medium text-2xl border-purple-200 p-2.5 aria-[current=page]:text-purple-600 md:px-4"
+            className="rounded-lg border font-medium text-sm border-purple-200 p-2.5 aria-[current=page]:text-purple-600 md:px-4"
             to="/NewTask"
           >
             + New task
           </NavLink>
           <NavLink
-            className="aria-[current=page]:text-purple-600 font-medium text-2xl"
+            className="aria-[current=page]:text-purple-600 font-medium text-sm"
             to="/MyTask"
           >
             All tasks
           </NavLink>
 
-          <img
-            className="hidden size-10 rounded-full object-cover md:block"
-            src={profilePicture}
-            alt="Profile picture"
-          />
+          {authenticated ? <button className="rounded-lg bg-purple-50 px-4 py-2 text-purple-700" onClick={onLogout}>Log out</button> : <Link to="/login" className="text-purple-700">Log in</Link>}
         </div>
       </nav>
     </header>
