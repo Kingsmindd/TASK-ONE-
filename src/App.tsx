@@ -7,6 +7,7 @@ import MyTaskPage from "./Pages/MyTaskPage";
 import NewTask from "./Pages/NewTask";
 import EditTaskPage from "./Pages/EditTaskPage";
 import LoginPage from "./Pages/loginPage";
+import RegisterPage from "./Pages/RegisterPage";
 import { fetchTasks, saveTask, removeTask } from "./api/tasks";
 import { ApiError } from "./api/http";
 import type { Task, TaskInput } from "./tasks";
@@ -28,8 +29,8 @@ export default function App() {
   const [notice, setNotice] = useState("");
   const [revision, setRevision] = useState(0);
   useEffect(() => {
-    if (!notice.startsWith('Task ')) return;
-    const timer = setTimeout(() => setNotice(''), 10_000);
+    if (!notice.startsWith("Task ")) return;
+    const timer = setTimeout(() => setNotice(""), 10_000);
     return () => clearTimeout(timer);
   }, [notice, revision]);
   function logout() {
@@ -40,9 +41,7 @@ export default function App() {
     setError("");
     try {
       sessionStorage.removeItem("taskduty.token");
-    } catch {
-      /* Storage may be disabled. */
-    }
+    } catch {}
   }
   function login(value: string) {
     setLoading(true);
@@ -50,9 +49,7 @@ export default function App() {
     setToken(value);
     try {
       sessionStorage.setItem("taskduty.token", value);
-    } catch {
-      /* Keep this session in memory. */
-    }
+    } catch {}
   }
   function handleError(error: unknown) {
     if (error instanceof ApiError && error.status === 401) {
@@ -156,7 +153,7 @@ export default function App() {
           {notice && (
             <div
               role="status"
-              className="mb-6 flex items-center justify-between rounded-xl bg-purple-100 p-4 text-purple-900"
+              className="fixed right-5 top-24 z-50 flex w-[calc(100%-2.5rem)] max-w-sm items-center justify-between gap-4 rounded-xl bg-purple-100 p-4 text-purple-900 shadow-lg"
             >
               {notice}
               <button
@@ -194,6 +191,16 @@ export default function App() {
               }
             />
             <Route
+              path="/register"
+              element={
+                token ? (
+                  <Navigate to="/MyTask" replace />
+                ) : (
+                  <RegisterPage onLogin={login} />
+                )
+              }
+            />
+            <Route
               path="/MyTask"
               element={protectedPage(
                 <>
@@ -214,7 +221,13 @@ export default function App() {
                       </div>
                     ))}
                   </div>
-                  <TaskSearch value={search} onChange={value => {setSearch(value); setLoading(true);}} />
+                  <TaskSearch
+                    value={search}
+                    onChange={(value) => {
+                      setSearch(value);
+                      setLoading(true);
+                    }}
+                  />
                   {loading ? (
                     <p role="status" className="py-12 text-center">
                       Loading tasks…
@@ -229,7 +242,10 @@ export default function App() {
                           tasks={results}
                           total={tasks.length}
                           searching={!!search.trim()}
-                          onClearSearch={() => {setSearch(""); setLoading(true);}}
+                          onClearSearch={() => {
+                            setSearch("");
+                            setLoading(true);
+                          }}
                           onToggle={(id) => {
                             void act(id, false);
                           }}

@@ -2,7 +2,10 @@ import type * as React from "react";
 import { NavLink, Link } from "react-router-dom";
 import logo from "../assets/Group 1.png";
 
-const Navbar: React.FC<{ authenticated: boolean; onLogout: () => void }> = ({authenticated, onLogout}) => {
+const Navbar: React.FC<{ authenticated: boolean; onLogout: () => void }> = ({
+  authenticated,
+  onLogout,
+}) => {
   return (
     <header className="border-b border-purple-100 bg-white">
       <nav
@@ -34,7 +37,27 @@ const Navbar: React.FC<{ authenticated: boolean; onLogout: () => void }> = ({aut
             All tasks
           </NavLink>
 
-          {authenticated ? <button className="rounded-lg bg-purple-50 px-4 py-2 text-purple-700" onClick={onLogout}>Log out</button> : <Link to="/login" className="text-purple-700">Log in</Link>}
+          {authenticated ? (
+            <button
+              className="rounded-lg bg-purple-50 px-4 py-2 text-purple-700"
+              onClick={onLogout}
+            >
+              Log out
+            </button>
+          ) : (
+            <>
+              <Link to="/login" className="text-purple-700">
+                Log in
+              </Link>
+
+              <Link
+                to="/register"
+                className="rounded-lg bg-purple-600 px-4 py-2 text-white hover:bg-purple-700"
+              >
+                Sign up
+              </Link>
+            </>
+          )}
         </div>
       </nav>
     </header>

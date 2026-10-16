@@ -14,6 +14,17 @@ const MyTaskPage: React.FC<{
   onDelete: (id: string) => void;
 }> = ({ tasks, total, searching, onClearSearch, onToggle, onDelete }) => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [completionDrafts, setCompletionDrafts] = useState<
+    Record<string, boolean>
+  >({});
+
+  function cancelUpdate(id: string) {
+    setCompletionDrafts((current) => {
+      const next = { ...current };
+      delete next[id];
+      return next;
+    });
+  }
 
   const filtered = tasks;
 
@@ -35,7 +46,10 @@ const MyTaskPage: React.FC<{
       </p>
       <div className="grid gap-8">
         {filtered.map((task) => {
-          const overdue = !task.completed && !!task.dueDate && task.dueDate < today();
+          const completed = completionDrafts[task.id] ?? task.completed;
+          const hasChanges = completed !== task.completed;
+          const overdue =
+            !task.completed && !!task.dueDate && task.dueDate < today();
           return (
             <article
               id={task.id}
@@ -82,27 +96,67 @@ const MyTaskPage: React.FC<{
               </p>
               <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
                 <span className={overdue ? "text-rose-700" : "text-stone-500"}>
-                  {!task.dueDate ? "No due date" : overdue ? "Overdue · " : "Due "}
-                  {task.dueDate && new Date(task.dueDate + "T00:00:00").toLocaleDateString(
-                    undefined,
-                    { day: "numeric", month: "short", year: "numeric" },
-                  )}
+                  {!task.dueDate
+                    ? "No due date"
+                    : overdue
+                      ? "Overdue · "
+                      : "Due "}
+                  {task.dueDate &&
+                    new Date(task.dueDate + "T00:00:00").toLocaleDateString(
+                      undefined,
+                      { day: "numeric", month: "short", year: "numeric" },
+                    )}
                 </span>
                 <label className="flex cursor-pointer items-center gap-2 text-stone-500">
                   <input
                     className="size-4.5 shrink-0 cursor-pointer accent-purple-600"
                     type="checkbox"
-                    checked={task.completed}
-                    onChange={() => onToggle(task.id)}
+                    checked={completed}
+                    onChange={(event) => {
+                      const checked = event.target.checked;
+
+                      setCompletionDrafts((current) => ({
+                        ...current,
+                        [task.id]: checked,
+                      }));
+                    }}
                     aria-label={
                       "Mark " +
                       task.title +
-                      (task.completed ? " as pending" : " as completed")
+                      (completed ? " as pending" : " as completed")
                     }
                   />
-                  {task.completed ? "Completed" : "Mark complete"}
+                  {completed ? "Completed" : "Mark complete"}
                 </label>
               </div>
+
+              {hasChanges && (
+                <div
+                  className="mt-5 flex flex-wrap items-center gap-3 border-t border-purple-100 pt-5"
+                  role="group"
+                  aria-label={"Update status of " + task.title}
+                >
+                  <p className="grow text-sm text-stone-600">
+                    Update this task as {completed ? "completed" : "pending"}?
+                  </p>
+
+                  <button
+                    type="button"
+                    className="rounded-lg bg-purple-100 px-6 py-3 text-sm font-semibold text-purple-800"
+                    onClick={() => cancelUpdate(task.id)}
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="button"
+                    className="rounded-lg bg-purple-600 px-6 py-3 text-sm font-semibold text-white hover:bg-purple-700"
+                    onClick={() => onToggle(task.id)}
+                  >
+                    Update
+                  </button>
+                </div>
+              )}
               {deleteId === task.id && (
                 <div
                   className="mt-5 flex flex-wrap items-center gap-3 border-t border-purple-100 pt-5"

@@ -85,10 +85,18 @@ const EditTaskFields: React.FC<{
       document.getElementById(firstError)?.focus();
       return;
     }
-    setSaving(true); setSaveError('');
-    try { await onSave(task.id, details); navigate('/MyTask'); }
-    catch (error) { setSaveError(error instanceof Error ? error.message : 'Unable to save task'); }
-    finally { setSaving(false); }
+    setSaving(true);
+    setSaveError("");
+    try {
+      await onSave(task.id, details);
+      navigate("/MyTask");
+    } catch (error) {
+      setSaveError(
+        error instanceof Error ? error.message : "Unable to save task",
+      );
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -107,7 +115,8 @@ const EditTaskFields: React.FC<{
       </div>
       <form className="bg-white" noValidate onSubmit={handleSubmit}>
         <p className="mb-9 text-xs text-stone-500">
-          Choose a title, due date, and tag. Description and completion are optional.
+          Choose a title, due date, and tag. Description and completion are
+          optional.
         </p>
         <div className="relative mb-10">
           <label
@@ -177,7 +186,6 @@ const EditTaskFields: React.FC<{
               className="w-full min-h-18 rounded-lg border border-stone-400 bg-white px-5 py-6 text-lg text-neutral-800 placeholder:text-base placeholder:text-stone-400 focus:border-purple-600 aria-invalid:border-rose-600 md:min-h-20 md:px-6 md:text-xl"
               id="dueDate"
               type="date"
-
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
               required
@@ -235,16 +243,23 @@ const EditTaskFields: React.FC<{
           />
           <span>Mark as completed</span>
         </label>
-        {saveError && <p role="alert" className="mt-4 text-rose-700">{saveError}</p>}
+        {saveError && (
+          <p role="alert" className="mt-4 text-rose-700">
+            {saveError}
+          </p>
+        )}
         <div className="mt-8 flex flex-col gap-4">
           <button
             className="w-full rounded-lg bg-purple-600 px-5 py-3 text-3xl font-medium text-white hover:bg-purple-700"
             disabled={saving}
             type="submit"
           >
-            {saving ? 'Saving...' : 'Save task'}
+            {saving ? "Saving..." : "Save task"}
           </button>
-          <Link className="inline-flex min-h-12 w-full items-center justify-center rounded-lg border border-purple-200 bg-purple-50 px-5 py-3 text-base font-semibold text-purple-700 transition-colors hover:border-purple-300 hover:bg-purple-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600 active:bg-purple-200" to="/MyTask">
+          <Link
+            className="inline-flex min-h-12 w-full items-center justify-center rounded-lg border border-purple-200 bg-purple-50 px-5 py-3 text-base font-semibold text-purple-700 transition-colors hover:border-purple-300 hover:bg-purple-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600 active:bg-purple-200"
+            to="/MyTask"
+          >
             Cancel
           </Link>
         </div>

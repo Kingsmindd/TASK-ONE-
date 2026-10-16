@@ -1,14 +1,13 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { loginUser, registerUser } from "../api/auth";
+import { Link } from "react-router-dom";
+import { loginUser } from "../api/auth";
 
 interface LoginPageProps {
   onLogin: (token: string) => void;
 }
 
 export default function LoginPage({ onLogin }: LoginPageProps) {
-  const [registering, setRegistering] = useState(false);
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -21,7 +20,6 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
     setLoading(true);
 
     try {
-      if (registering) await registerUser({ name: name.trim(), email: email.trim(), password });
       const data = await loginUser({
         email: email.trim(),
         password,
@@ -41,10 +39,11 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
 
   return (
     <section className="mx-auto max-w-md">
-      <h1 className="mb-6 text-3xl font-semibold">{registering ? 'Create your account' : 'Welcome back'}</h1>
+      <h1 className="mb-6 text-3xl font-semibold">
+        Welcome back
+      </h1>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        {registering && <label className="block">Name<input className="mt-2 w-full rounded-lg border border-stone-400 p-3" autoComplete="name" required maxLength={100} value={name} onChange={e => setName(e.target.value)} /></label>}
         <div>
           <label htmlFor="login-email" className="mb-2 block">
             Email
@@ -67,8 +66,8 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
           <input
             id="login-password"
             type="password"
-            autoComplete={registering ? 'new-password' : 'current-password'}
-            minLength={registering ? 8 : 1}
+            autoComplete="current-password"
+            minLength={1}
             required
             value={password}
             onChange={(event) => setPassword(event.target.value)}
@@ -87,10 +86,15 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
           disabled={loading}
           className="w-full rounded-lg bg-purple-600 p-3 text-white disabled:opacity-50"
         >
-          {loading ? 'Please wait...' : registering ? 'Create account' : 'Log in'}
+          {loading ? "Please wait..." : "Log in"}
         </button>
       </form>
-      <button className="mt-6 text-purple-700 underline" onClick={() => {setRegistering(!registering); setError('');}}>{registering ? 'Already have an account? Log in' : 'New here? Create an account'}</button>
+      <p className="mt-6">
+        New here?{" "}
+        <Link to="/register" className="text-purple-700 underline">
+          Create an account
+        </Link>
+      </p>
     </section>
   );
 }
