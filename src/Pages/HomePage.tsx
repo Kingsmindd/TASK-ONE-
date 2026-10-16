@@ -11,10 +11,9 @@ const HomePage: React.FC = () => {
           <span className="text-purple-600">TaskDuty</span>
         </h1>
         <p className="my-7 max-w-md text-base leading-loose text-stone-500">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Non tellus,
-          sapien, morbi ante nunc euismod ac felis ac. Massa et, at platea
-          tempus duis non eget. Hendrerit tortor fermentum bibendum mi nisl
-          semper porttitor. Nec accumsan.
+          Keep your day organised with tasks, due dates, and clear priorities.
+          Search your list, track your progress, and pick up where you left off
+          on any device.
         </p>
         <Link
           className="inline-flex min-h-12 items-center justify-center gap-6 rounded-lg px-6 py-3.5 text-sm font-semibold transition hover:-translate-y-0.5 motion-reduce:transform-none motion-reduce:transition-none bg-purple-600 text-white hover:bg-purple-700"
