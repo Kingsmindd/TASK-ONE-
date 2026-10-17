@@ -155,7 +155,7 @@ const NewTask: React.FC<{
               Due date
             </label>
             <input
-              className="w-full min-h-18 rounded-lg border border-stone-400 bg-white px-5 py-6 text-lg text-neutral-800 placeholder:text-base placeholder:text-stone-400 focus:border-purple-600 aria-invalid:border-rose-600 md:min-h-20 md:px-6 md:text-xl"
+              className="block w-full min-w-0 max-w-full box-border appearance-none min-h-18 rounded-lg border border-stone-400 bg-white px-5 py-6 text-lg text-neutral-800 placeholder:text-base placeholder:text-stone-400 focus:border-purple-600 aria-invalid:border-rose-600 md:min-h-20 md:px-6 md:text-xl"
               id="dueDate"
               type="date"
               value={dueDate}
