@@ -29,8 +29,8 @@ export default function App() {
   const [notice, setNotice] = useState("");
   const [revision, setRevision] = useState(0);
   useEffect(() => {
-    if (!notice.startsWith("Task ")) return;
-    const timer = setTimeout(() => setNotice(""), 10_000);
+    if (!notice) return;
+    const timer = setTimeout(() => setNotice(""), 5_000);
     return () => clearTimeout(timer);
   }, [notice, revision]);
   function logout() {
@@ -41,7 +41,7 @@ export default function App() {
     setError("");
     try {
       sessionStorage.removeItem("taskduty.token");
-    } catch {}
+    } catch { /* Storage may be disabled; the session still works in memory. */ }
   }
   function login(value: string) {
     setLoading(true);
@@ -49,7 +49,7 @@ export default function App() {
     setToken(value);
     try {
       sessionStorage.setItem("taskduty.token", value);
-    } catch {}
+    } catch { /* Storage may be disabled; the session still works in memory. */ }
   }
   function handleError(error: unknown) {
     if (error instanceof ApiError && error.status === 401) {
@@ -125,20 +125,24 @@ export default function App() {
     }
   }
   async function act(id: string, remove: boolean) {
-    if (!token || busy) return;
+    if (!token || busy) return false;
     setBusy(true);
     setError("");
     try {
       if (remove) await removeTask(token, id);
       else {
         const task = tasks.find((t) => t.id === id);
-        if (!task) return;
+        if (!task) return false;
         await saveTask(token, { completed: !task.completed }, id);
       }
+      setTasks((current) => remove ? current.filter((task) => task.id !== id) : current.map((task) => task.id === id ? { ...task, completed: !task.completed } : task));
+      setResults((current) => remove ? current.filter((task) => task.id !== id) : current.map((task) => task.id === id ? { ...task, completed: !task.completed } : task));
       setNotice(remove ? "Task deleted." : "Task status updated.");
       setRevision((r) => r + 1);
+      return true;
     } catch (err) {
       handleError(err);
+      return false;
     } finally {
       setBusy(false);
     }
@@ -147,7 +151,7 @@ export default function App() {
     token ? page : <Navigate to="/login" replace />;
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-stone-50 text-neutral-800">
+      <div className="min-h-screen min-w-80 bg-stone-50 font-sans text-neutral-800 scheme-light [&_*]:[-webkit-tap-highlight-color:transparent] [&_button:not(:disabled)]:cursor-pointer [&_button:disabled]:cursor-not-allowed [&_select]:cursor-pointer [&_a:focus-visible]:outline-3 [&_a:focus-visible]:outline-purple-500 [&_a:focus-visible]:outline-offset-4 [&_button:focus-visible]:outline-3 [&_button:focus-visible]:outline-purple-500 [&_button:focus-visible]:outline-offset-4 [&_input:focus-visible]:outline-2 [&_input:focus-visible]:outline-purple-500 [&_input:focus-visible]:outline-offset-2 [&_textarea:focus-visible]:outline-2 [&_textarea:focus-visible]:outline-purple-500 [&_textarea:focus-visible]:outline-offset-2 [&_select:focus-visible]:outline-2 [&_select:focus-visible]:outline-purple-500 [&_select:focus-visible]:outline-offset-2 motion-reduce:[&_*]:animate-none motion-reduce:[&_*]:transition-none motion-reduce:[&_*]:scroll-auto">
         <Navbar authenticated={!!token} onLogout={logout} />
         <main className="mx-auto max-w-6xl px-5 py-9 md:px-8 md:py-12">
           {notice && (
@@ -204,7 +208,11 @@ export default function App() {
               path="/MyTask"
               element={protectedPage(
                 <>
-                  <div className="mb-8 grid grid-cols-3 gap-3">
+                  <div className="mb-7 rounded-3xl border border-purple-100 bg-gradient-to-br from-purple-50 to-white p-5 sm:p-7">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-purple-600">Your workspace</p>
+                    <h1 className="mt-2 text-3xl font-bold tracking-tight text-purple-950 sm:text-4xl">Make room for progress.</h1>
+                    <p className="mt-3 max-w-xl text-sm leading-6 text-stone-500">Keep your priorities in sight. Plan what comes next and celebrate what you have finished.</p>
+                    <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-4">
                     {[
                       ["Total tasks", tasks.length],
                       ["Completed", tasks.filter((t) => t.completed).length],
@@ -212,14 +220,15 @@ export default function App() {
                     ].map(([label, value]) => (
                       <div
                         key={label}
-                        className="rounded-xl border border-purple-100 bg-white p-4"
+                        className="rounded-2xl border border-purple-100 bg-white/90 p-3 sm:p-5"
                       >
                         <p className="text-xs text-stone-500">{label}</p>
-                        <p className="mt-2 text-3xl font-semibold text-purple-700">
+                        <p className="mt-2 text-2xl font-bold tracking-tight text-purple-700 sm:text-3xl">
                           {value}
                         </p>
                       </div>
                     ))}
+                  </div>
                   </div>
                   <TaskSearch
                     value={search}
@@ -246,9 +255,7 @@ export default function App() {
                             setSearch("");
                             setLoading(true);
                           }}
-                          onToggle={(id) => {
-                            void act(id, false);
-                          }}
+                          onToggle={(id) => act(id, false)}
                           onDelete={(id) => {
                             void act(id, true);
                           }}
