@@ -13,7 +13,9 @@ export async function request<T>(
   body?: unknown,
   signal?: AbortSignal,
 ): Promise<T> {
-  const timeout = AbortSignal.timeout(20_000);
+  // Allow the hosted API time to start; local requests retain a shorter limit.
+  const hostedOnRender = new URL(base, window.location.origin).hostname.endsWith(".onrender.com");
+  const timeout = AbortSignal.timeout(hostedOnRender ? 65_000 : 20_000);
   const requestSignal = signal ? AbortSignal.any([signal, timeout]) : timeout;
   let response: Response;
   try {
